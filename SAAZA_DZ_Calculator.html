@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SAAZA Drop Zone Calculator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f4f4f0;color:#1a1a1a;padding:1rem;min-height:100vh}
+a.back{display:inline-block;font-size:12px;color:#1D9E75;text-decoration:none;margin-bottom:12px}
+h1{font-size:20px;font-weight:600;margin-bottom:2px}
+.sub{font-size:13px;color:#666;margin-bottom:1rem;line-height:1.5}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem 1.1rem;margin-bottom:12px}
+.card-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.intro{background:#EEF6FB;border-left:3px solid #0C6CB8;border-radius:0 8px 8px 0;padding:10px 13px;font-size:12.5px;color:#0C447C;line-height:1.7;margin-bottom:14px}
+.intro b{color:#093358}
+.manfas-key{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.manfas-key span{font-size:11px;background:#fff;border:1px solid #cfe0ee;border-radius:6px;padding:2px 7px;color:#0C447C}
+.manfas-key b{color:#093358}
+.seg-label{font-size:11px;color:#888;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;margin-top:12px}
+.seg-label:first-child{margin-top:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:60px;padding:9px 6px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:#555;font-weight:500}
+.seg button.on{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.row2{display:flex;gap:10px}
+.row2>div{flex:1}
+.num-input{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:15px;-webkit-appearance:none}
+.num-input:focus{border-color:#1D9E75;outline:none}
+.hidden{display:none}
+.hint{font-size:11px;color:#999;margin-top:4px;line-height:1.4}
+.calc-btn{width:100%;background:#1D9E75;color:#fff;border:none;border-radius:9px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px}
+.calc-btn:active{background:#0F6E56}
+.result{display:none;margin-top:14px}
+.big-result{display:flex;gap:10px;margin-bottom:14px}
+.big-box{flex:1;background:#EAF3DE;border-radius:10px;padding:14px;text-align:center}
+.big-box .lbl{font-size:11px;color:#3a6b1a;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.big-box .val{font-size:28px;font-weight:700;color:#27500A;line-height:1.1;margin-top:4px}
+.big-box .unit{font-size:12px;color:#3a6b1a}
+.manfas-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:6px}
+.manfas-table th{text-align:left;padding:6px 7px;color:#888;font-weight:500;font-size:10px;border-bottom:1px solid #e0e0e0;text-transform:uppercase}
+.manfas-table td{padding:6px 7px;border-bottom:1px solid #f4f4f4;vertical-align:top}
+.manfas-table .ml{font-weight:700;color:#1D9E75;width:18px}
+.manfas-table .amt{text-align:right;font-family:"Courier New",monospace;font-weight:600;white-space:nowrap}
+.manfas-table .src{font-size:10px;color:#aaa;display:block}
+.manfas-table .tot td{border-top:2px solid #1D9E75;border-bottom:none;font-weight:700;padding-top:8px}
+.manfas-table .tot .amt{color:#0F6E56;font-size:15px}
+.subhdr{font-size:13px;font-weight:600;margin:14px 0 6px;color:#333}
+.pi-box{background:#FFF7E6;border-radius:10px;padding:12px 14px;margin-top:6px}
+.pi-line{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #f3e8cf}
+.pi-line:last-child{border-bottom:none}
+.pi-line b{font-family:"Courier New",monospace;color:#7a5a00}
+.warn{background:#FCEBEB;border-left:3px solid #D8403E;border-radius:0 8px 8px 0;padding:10px 13px;font-size:12px;color:#791F1F;line-height:1.6;margin:10px 0}
+.note{font-size:11.5px;color:#777;line-height:1.6;margin-top:10px}
+.src-tag{font-size:11px;color:#aaa;font-style:italic}
+.footer{text-align:center;font-size:11px;color:#aaa;margin-top:1.5rem;padding-bottom:2rem}
+</style>
+</head>
+<body>
+<a class="back" href="index.html">&larr; Back to all tools</a>
+<h1>Drop Zone Size &amp; PI Calculator</h1>
+<p class="sub">Computes minimum DZ dimensions and Point of Impact placement &mdash; shows every adjustment</p>
+
+<div class="intro">
+This calculator walks the <b>MANFAS</b> method and pulls every number from <b>DAFMAN 13-217</b> (Tables 3.1 &amp; 3.2). All figures trace to the regulation, not the slides &mdash; so the result is defensible.
+<div class="manfas-key">
+<span><b>M</b>&middot;Minimums</span><span><b>A</b>&middot;Altitude</span><span><b>N</b>&middot;Night</span><span><b>F</b>&middot;Formations</span><span><b>A</b>&middot;Additional</span><span><b>S</b>&middot;Safety</span>
+</div>
+</div>
+
+<div class="card">
+<div class="seg-label">Aircraft</div>
+<div class="seg" id="ac-seg">
+<button class="on" data-v="C-130" onclick="setSeg('ac',this)">C-130</button>
+<button data-v="C-17" onclick="setSeg('ac',this)">C-17</button>
+</div>
+
+<div class="seg-label">Drop type</div>
+<div class="seg" id="dt-seg">
+<button class="on" data-v="cds" onclick="setSeg('dt',this)">CDS</button>
+<button data-v="pers" onclick="setSeg('dt',this)">Personnel</button>
+<button data-v="he" onclick="setSeg('dt',this)">Heavy Equip</button>
+</div>
+
+<div class="row2" style="margin-top:12px">
+<div>
+<div class="seg-label" style="margin-top:0"><span id="count-label">Single-bundle containers</span></div>
+<input class="num-input" type="number" id="count" value="1" min="1" inputmode="numeric"/>
+<div class="hint" id="count-hint">Number of single-bundle containers</div>
+</div>
+<div>
+<div class="seg-label" style="margin-top:0">Drop altitude (ft AGL)</div>
+<input class="num-input" type="number" id="alt" value="500" min="0" inputmode="numeric"/>
+<div class="hint">Above ground level</div>
+</div>
+</div>
+
+<div class="seg-label">Time of day</div>
+<div class="seg" id="time-seg">
+<button class="on" data-v="day" onclick="setSeg('time',this)">Day</button>
+<button data-v="night" onclick="setSeg('time',this)">Night (sunset&ndash;sunrise)</button>
+</div>
+
+<div class="seg-label">Delivery</div>
+<div class="seg" id="del-seg">
+<button class="on" data-v="single" onclick="setSeg('del',this)">Single ship</button>
+<button data-v="formation" onclick="setSeg('del',this)">Formation</button>
+</div>
+
+<div id="ftype-wrap" class="hidden">
+<div class="seg-label">Formation type</div>
+<div class="seg" id="ft-seg">
+<button class="on" data-v="visual" onclick="setSeg('ft',this)"><span id="ft-vis-label">Visual</span></button>
+<button data-v="ske" onclick="setSeg('ft',this)">SKE</button>
+</div>
+</div>
+
+<div class="seg-label">EGI / Embedded GPS drop? <span style="text-transform:none;color:#bbb">(C-130J / C-17)</span></div>
+<div class="seg" id="egi-seg">
+<button class="on" data-v="no" onclick="setSeg('egi',this)">No / standard</button>
+<button data-v="yes" onclick="setSeg('egi',this)">Yes (EGI)</button>
+</div>
+<div class="hint">EGI drops waive the night &amp; formation adjustments (DAFMAN Notes 2&ndash;4).</div>
+
+<div id="safety-wrap">
+<div class="seg-label">Safety zone (yds, optional)</div>
+<input class="num-input" type="number" id="safety" value="0" min="0" inputmode="numeric"/>
+<div class="hint" id="safety-hint">Subtracted from trailing edge. Peacetime personnel: never less than 200 yds.</div>
+</div>
+</div>
+
+<button class="calc-btn" onclick="calcDZ()">Calculate DZ Size &amp; PI</button>
+
+<div class="result" id="result">
+<div class="card">
+<div class="big-result">
+<div class="big-box"><div class="lbl">Width</div><div class="val" id="r-width">0</div><div class="unit">yards</div></div>
+<div class="big-box"><div class="lbl">Length</div><div class="val" id="r-length">0</div><div class="unit">yards</div></div>
+</div>
+<div id="config-summary" style="font-size:12px;color:#666;text-align:center;margin-bottom:8px"></div>
+
+<div class="subhdr">Width build-up</div>
+<table class="manfas-table" id="width-table"></table>
+
+<div class="subhdr">Length build-up</div>
+<table class="manfas-table" id="length-table"></table>
+
+<div id="warnings"></div>
+
+<div class="subhdr">Point of Impact (PI) placement</div>
+<div class="pi-box" id="pi-box"></div>
+
+<div class="note" id="footnotes"></div>
+</div>
+</div>
+
+<div class="footer">SAAZA Drop Zone Calculator &mdash; 136CRF &mdash; data from DAFMAN 13-217 &middot; works offline</div>
+
+<script>
+var S={ac:"C-130",dt:"cds",time:"day",del:"single",ft:"visual",egi:"no"};
+
+function setSeg(group,b){
+ var map={ac:"ac-seg",dt:"dt-seg",time:"time-seg",del:"del-seg",ft:"ft-seg",egi:"egi-seg"};
+ S[group]=b.dataset.v;
+ document.querySelectorAll("#"+map[group]+" button").forEach(function(x){x.classList.remove("on")});
+ b.classList.add("on");
+ if(group==="del"){ document.getElementById("ftype-wrap").className = (S.del==="formation")?"":"hidden"; }
+ if(group==="dt"){ updateDtLabels(); }
+ if(group==="ac"){ updateDtLabels(); }
+}
+
+function updateDtLabels(){
+ var cl=document.getElementById("count-label"), ch=document.getElementById("count-hint");
+ var sw=document.getElementById("safety-wrap");
+ if(S.dt==="cds"){cl.textContent="Single-bundle containers";ch.textContent="Number of single-bundle containers";}
+ else if(S.dt==="pers"){cl.textContent="Number of parachutists";ch.textContent="Max simultaneous stick (e.g. 4 if passes of 4)";}
+ else {cl.textContent="Number of platforms";ch.textContent="Heavy equipment platforms";}
+ // C-17 formation pilot-directed label
+ document.getElementById("ft-vis-label").textContent = (S.ac==="C-17")?"Pilot-directed":"Visual";
+}
+
+// ---- DAFMAN 13-217 Table 3.1 data ----
+function cdsBaseWidth(ac,n){
+ if(ac==="C-130"){
+  if(n<=1)return [400,"1 single bundle"];
+  if(n===2)return [450,"2 single bundles"];
+  if(n===3)return [500,"3 single bundles"];
+  if(n===4)return [550,"4 single bundles"];
+  if(n<=8)return [700,"5\u20138 single bundles"];
+  if(n<=12)return [850,"9\u201312 single bundles"];
+  return [850,"9\u201312 max in table ("+n+" exceeds \u2014 verify)"];
+ } else {
+  if(n<=1)return [590,"1 single bundle"];
+  if(n===2)return [615,"2 single bundles"];
+  if(n===3)return [665,"3 single bundles"];
+  if(n<=8)return [765,"4\u20138 single bundles"];
+  if(n<=14)return [915,"9\u201314 single bundles"];
+  if(n<=20)return [1065,"15\u201320 single bundles"];
+  return [1065,"15\u201320 max in table ("+n+" exceeds \u2014 verify)"];
+ }
+}
+
+function widthAdj(){
+ if(S.egi==="yes") return {val:0,label:"EGI drop \u2014 width adjustment waived (Notes 2\u20133)"};
+ var night=(S.time==="night");
+ if(S.ac==="C-130"){
+  if(S.del==="single") return night?{val:100,label:"Night visual single ship (Note 2b)"}:{val:0,label:"Day single ship \u2014 no adjustment"};
+  if(S.ft==="ske") return {val:400,label:"SKE formation (Note 2d)"};
+  return night?{val:200,label:"Night visual formation (Note 2c)"}:{val:100,label:"Day visual formation (Note 2a)"};
+ } else {
+  if(S.del==="single") return {val:0,label:"Single ship \u2014 no width adjustment"};
+  if(S.ft==="ske") return {val:400,label:"SKE formation, HE/CDS (Note 3b)"};
+  return {val:100,label:"Pilot-directed formation (Note 3a)"};
+ }
+}
+
+function nightLengthAdj(){
+ if(S.egi==="yes") return {val:0,label:"EGI drop \u2014 night length waived (Note 4)"};
+ if(S.time==="night") return {val:100,label:"Night visual airdrop +100 (Note 4a)"};
+ return {val:0,label:"Day \u2014 no night adjustment"};
+}
+
+function calcDZ(){
+ var n=Math.max(1,parseInt(document.getElementById("count").value)||1);
+ var alt=Math.max(0,parseInt(document.getElementById("alt").value)||0);
+ var safety=Math.max(0,parseInt(document.getElementById("safety").value)||0);
+
+ var baseW, baseL, baseWnote, baseLnote, altThresh, altStep, addRow=null, warnings=[];
+
+ if(S.dt==="cds"){
+  var cb=cdsBaseWidth(S.ac,n); baseW=cb[0]; baseWnote=cb[1];
+  baseL=(S.ac==="C-130")?400:450; baseLnote=S.ac+" CDS base length";
+  altThresh=600; altStep=40;
+ } else if(S.dt==="pers"){
+  baseW=600; baseWnote="Personnel base width";
+  baseL=600; baseLnote="1 parachutist";
+  altThresh=1000; altStep=30;
+  if(n>1) addRow={val:75*(n-1),label:(n-1)+" addl parachutist(s) \u00d7 75 yd to trailing edge",unit:"L"};
+  if(S.ac==="C-17"&&S.del==="formation"){
+   warnings.push("<b>C-17 personnel formation:</b> DAFMAN Note 3c sets special basic widths \u2014 1240 yd (2-ship) / 1800 yd (3-ship) center-PI, or 1050 / 1300 yd offset-PI \u2014 instead of 600. Apply the correct basic width for your element, then add altitude. Verify against Note 3c.");
+  }
+ } else { // he
+  baseW=600; baseWnote="Heavy equipment base width";
+  baseL=1000; baseLnote="1 platform";
+  altThresh=1100; altStep=30;
+  var per=(S.ac==="C-130")?400:500;
+  if(n>1) addRow={val:per*(n-1),label:(n-1)+" addl platform(s) \u00d7 "+per+" yd (\u200b"+S.ac+") to trailing edge",unit:"L"};
+ }
+
+ // altitude increments (round UP partial hundreds, conservative)
+ var altInc=0, altRounded=alt;
+ if(alt>altThresh){ altInc=Math.ceil((alt-altThresh)/100); altRounded=altThresh+altInc*100; }
+ var altAdd=altInc*altStep;
+ var altRoundNote = (alt>altThresh && (alt-altThresh)%100!==0) ? " (rounded up to "+altRounded+" ft)" : "";
+
+ var wAdj=widthAdj();
+ var nAdj=nightLengthAdj();
+
+ // ---- WIDTH build-up ----
+ var wRows=[];
+ wRows.push({m:"M",label:"Minimum base width",sub:baseWnote,amt:baseW});
+ wRows.push({m:"A",label:"Altitude"+altRoundNote,sub:altInc>0?(altInc+" \u00d7 "+altStep+" yd, >"+altThresh+" ft"):("at/below "+altThresh+" ft \u2014 none"),amt:altAdd});
+ wRows.push({m:"N/F",label:"Night / Formation",sub:wAdj.label,amt:wAdj.val});
+ var totW=baseW+altAdd+wAdj.val;
+
+ // ---- LENGTH build-up ----
+ var lRows=[];
+ lRows.push({m:"M",label:"Minimum base length",sub:baseLnote,amt:baseL});
+ lRows.push({m:"A",label:"Altitude"+altRoundNote,sub:altInc>0?(altInc+" \u00d7 "+altStep+" yd, >"+altThresh+" ft"):("at/below "+altThresh+" ft \u2014 none"),amt:altAdd});
+ lRows.push({m:"N",label:"Night",sub:nAdj.label,amt:nAdj.val});
+ if(addRow) lRows.push({m:"A",label:"Additional",sub:addRow.label,amt:addRow.val});
+ else lRows.push({m:"A",label:"Additional",sub:(S.dt==="cds"?"CDS length is fixed \u2014 bundles set width":"single unit \u2014 none"),amt:0});
+ var safetyApplied=safety;
+ var safetyNote="optional, none entered";
+ if(safety>0){
+  safetyNote="\u2212"+safety+" yd from trailing edge";
+  if(S.dt==="pers"&&safety<200) warnings.push("<b>Safety zone:</b> entered "+safety+" yd, but peacetime personnel safety zone is never less than 200 yd (Note 4b, T-0).");
+ }
+ lRows.push({m:"S",label:"Safety zone",sub:safetyNote,amt:safety>0?(-safety):0});
+ var totL=baseL+altAdd+nAdj.val+(addRow?addRow.val:0)-safety;
+ if(totL<0)totL=0;
+
+ // render width table
+ var wh='<tr><th>MANFAS</th><th>Adjustment</th><th>yds</th></tr>';
+ wRows.forEach(function(r){
+  wh+='<tr><td class="ml">'+r.m+'</td><td>'+r.label+'<span class="src">'+r.sub+'</span></td><td class="amt">'+(r.amt>=0?(r.amt===0?"\u2014":"+"+r.amt):r.amt)+'</td></tr>';
+ });
+ wh+='<tr class="tot"><td></td><td>Total width</td><td class="amt">'+totW+'</td></tr>';
+ document.getElementById("width-table").innerHTML=wh;
+
+ // render length table
+ var lh='<tr><th>MANFAS</th><th>Adjustment</th><th>yds</th></tr>';
+ lRows.forEach(function(r){
+  lh+='<tr><td class="ml">'+r.m+'</td><td>'+r.label+'<span class="src">'+r.sub+'</span></td><td class="amt">'+(r.amt>0?"+"+r.amt:(r.amt<0?r.amt:"\u2014"))+'</td></tr>';
+ });
+ lh+='<tr class="tot"><td></td><td>Total length</td><td class="amt">'+totL+'</td></tr>';
+ document.getElementById("length-table").innerHTML=lh;
+
+ document.getElementById("r-width").textContent=totW;
+ document.getElementById("r-length").textContent=totL;
+
+ // config summary
+ var dtName=S.dt==="cds"?"CDS":S.dt==="pers"?"Personnel":"Heavy Equipment";
+ var delName=S.del==="single"?"single ship":(S.ft==="ske"?"SKE formation":(S.ac==="C-17"?"pilot-directed formation":"visual formation"));
+ document.getElementById("config-summary").innerHTML=S.ac+" &middot; "+dtName+" &middot; "+n+" "+(S.dt==="cds"?"bundle(s)":S.dt==="pers"?"jumper(s)":"platform(s)")+" &middot; "+alt+" ft &middot; "+(S.time==="day"?"day":"night")+" &middot; "+delName+(S.egi==="yes"?" &middot; EGI":"");
+
+ // warnings
+ var ww="";
+ warnings.forEach(function(w){ ww+='<div class="warn">'+w+'</div>'; });
+ document.getElementById("warnings").innerHTML=ww;
+
+ // PI placement
+ var night=(S.time==="night" && S.egi!=="yes");
+ var piStd, piNV, piType;
+ if(S.dt==="cds"){ piType=(S.ac==="C-17")?"CDS / Dual Row Airdrop System":"CDS"; if(S.ac==="C-17"){piStd=225;piNV=275;}else{piStd=200;piNV=250;} }
+ else if(S.dt==="pers"){ piType="Personnel"; piStd=300;piNV=350; }
+ else { piType="Equipment"; piStd=500;piNV=550; }
+ var piUsed = night?piNV:piStd;
+ var piWhich = night?"night visual airdrop":"day / IMC";
+ var lateral=Math.round(totW/2);
+ document.getElementById("pi-box").innerHTML=
+  '<div class="pi-line"><span>Min from leading edge ('+piWhich+')</span><b>'+piUsed+' yd</b></div>'+
+  '<div class="pi-line"><span>Lateral \u2014 from nearest side</span><b>\u2265 '+lateral+' yd</b></div>'+
+  '<div style="font-size:11px;color:#9a7a2a;margin-top:8px;line-height:1.5">PI type: '+piType+'. Leading-edge min from Table 3.2. Lateral = \u00bd of min DZ width = '+totW+' \u00f7 2 (Note 1). PI may sit anywhere the full min DZ ('+totW+' \u00d7 '+totL+') still fits inside the surveyed boundary.</div>';
+
+ // footnotes
+ document.getElementById("footnotes").innerHTML=
+  '<b>Method:</b> Adjustments are cumulative and added half to each side/end (DAFMAN 3.3). Altitude increments round up partial hundreds (conservative \u2014 never undersize). All figures from DAFMAN 13-217 Tables 3.1 &amp; 3.2. '+
+  '<span class="src-tag">Always confirm T/M/S requirements and any MAJCOM-specific criteria.</span>';
+
+ document.getElementById("result").style.display="block";
+ document.getElementById("result").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+updateDtLabels();
+</script>
+</body>
+</html>
